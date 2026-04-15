@@ -1,0 +1,52 @@
+;;; mk-code-completion.el --- Code completion configuration -*- lexical-binding: t; -*-
+;;; Commentary:
+;; This file contains configurations related to code completion in Emacs.
+;;; Code:
+
+;; 1. L'INTERFACE (Company)
+(use-package company
+  :ensure t
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0)
+  (company-selection-wrap-around t)
+  ;; On empêche Company de transformer les majuscules/minuscules tout seul
+  (company-dabbrev-downcase nil)
+  (company-dabbrev-ignore-case nil)
+  :bind
+  (:map company-active-map
+        ("C-n" . company-select-next)
+        ("C-p" . company-select-previous)
+        ("RET" . company-complete-selection)
+        ("<tab>" . company-complete-selection)
+        ("<escape>" . company-abort))
+  :hook (prog-mode . global-company-mode)
+  :config
+  ;; LE FILTRE ANTI-DOUBLONS :
+  ;; 'delete-dups' supprime les suggestions identiques
+  ;; 'company-sort-by-occurrence' garde le tri intelligent
+  (setq company-transformers '(delete-dups company-sort-by-occurrence)))
+
+;; 2. LA MÉMOIRE (Prescient) - Le secret anti-frustration
+(use-package company-prescient
+  :ensure t
+  :after company
+  :config
+  (company-prescient-mode 1)
+  (prescient-persist-mode 1)) ;; Sauvegarde tes choix sur le disque pour le prochain redémarrage
+
+;; 3. LE CERVEAU (Eglot)
+(use-package eglot
+  :ensure t
+  ;; On essaie de lancer Eglot sur absolument TOUS les langages de programmation
+  :hook (prog-mode . eglot-ensure)
+  :config
+  ;; On garde tes serveurs spécifiques pour le JS/TS/TSX
+  (add-to-list 'eglot-server-programs
+               '((js-ts-mode typescript-ts-mode tsx-ts-mode) . ("typescript-language-server" "--stdio")))
+  
+  ;; Optionnel : Si tu veux que Eglot soit moins bavard dans la barre du bas
+  (setq eglot-report-progress nil))
+
+(provide 'mk-code-completion)
+;;; mk-code-completion.el ends here

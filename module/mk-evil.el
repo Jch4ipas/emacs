@@ -1,0 +1,393 @@
+;;; mk-evil.el --- Konfiguration för Evil mode -*- lexical-binding: t; -*-
+;;; Commentary:
+;; Workaround för saknad evil-mode-buffers variabel
+;;; Code:
+
+
+;; (use-package undo-tree
+;;   :init
+;;   (setopt undo-tree-enable-undo-in-region t
+;;           undo-tree-auto-save-history t
+;;           undo-tree-history-directory-alist '(("." . "~/.emacs.d/var/undo")))
+
+;;   :config
+;;   (global-undo-tree-mode))
+
+(use-package undo-fu
+  :ensure t
+  :defer t
+  :custom
+  (setopt undo-limit (* 13 160000))
+  (setopt undo-outer-limit (* 13 24000000))
+  (setopt undo-strong-limit (* 13 240000))
+  :config
+  (setq undo-fu-allow-undo-in-region t))
+
+(use-package undo-fu-session
+  :hook (after-init . undo-fu-session-global-mode)
+  :config
+  (setq undo-fu-session-incompatible-files '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'")
+        undo-fu-session-file-limit 10))
+
+(use-package savehist
+  :init
+  (setq savehist-file "~/.emacs.d/var/savehist.el")
+  :config
+  (setq history-length 500)
+  (setq savehist-additional-variables '(kill-ring search-ring))
+  (savehist-mode t))
+
+(use-package no-littering
+  :after savehist
+  :ensure t
+  :config
+  (setopt auto-save-file-name-transforms
+          `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+  (setopt backup-directory-alist
+          `(("." . ,(no-littering-expand-var-file-name "backups/"))))
+  (setopt custom-file (no-littering-expand-etc-file-name "custom.el"))
+  (require 'recentf)
+  (add-to-list 'recentf-exclude no-littering-var-directory)
+  (add-to-list 'recentf-exclude no-littering-etc-directory))
+
+(defvar evil-mode-buffers nil)
+
+(use-package evil
+  :ensure t
+  :custom
+  (evil-want-Y-yank-to-eol t)
+  (evil-default-cursor t)
+  (evil-search-module 'isearch)
+  (evil-undo-system 'undo-fu)
+  (evil-ex-search-case 'smart)
+  (evil-ex-search-persistent-highlight t)
+  (evil-want-minibuffer t)
+  (evil-want-C-u-scroll t)
+  (evil-want-fine-undo t)
+  (evil-split-window-below t)
+  (evil-vsplit-window-right t)
+  :init
+  (setq-default evil-symbol-word-search t)
+  (setopt evil-respect-visual-line-mode t)
+  ;; (setq evil-want-integration t
+  ;;       evil-want-keybinding nil
+  ;;       evil-want-fine-undo t
+  ;;       evil-want-C-u-scroll t
+  ;;       evil-respect-visual-line-mode t
+  ;;       evil-search-module 'evil-search
+  ;;       evil-vsplit-window-right t
+  ;;       evil-ex-search-vim-style-regexp t
+  ;;       evil-split-window-below t
+  ;;       evil-kill-on-visual-paste nil
+  ;;       evil-default-cursor t
+  ;;       evil-echo-state nil
+  ;;       evil-want-C-i-jump t)
+  :config
+  (setq evil-leader/in-all-states t)
+
+  (evil-set-leader 'normal (kbd "SPC"))
+  (evil-set-leader 'visual (kbd "SPC"))
+
+  (evil-define-key 'normal 'global (kbd "<leader>SPC") 'execute-extended-command)
+  (evil-define-key 'normal 'global (kbd "<leader> .") 'embark-act)
+  (evil-define-key 'normal 'global (kbd "<leader> P") 'package-install)
+  (evil-define-key 'normal 'global (kbd "<leader> S") 'consult-line-multi)
+  (evil-define-key 'normal 'global (kbd "<leader> F") 'consult-line)
+
+  (evil-define-key 'normal 'global (kbd "<leader> a a") 'android-emulator-start-logcat)
+  (evil-define-key 'normal 'global (kbd "<leader> a q") 'android-emulator-quit-logcat)
+  (evil-define-key 'normal 'global (kbd "<leader> a r") 'android-emulator-restart-logcat)
+  (which-key-add-key-based-replacements "<leader> a" "Android")
+
+  (evil-define-key 'normal 'global (kbd "<leader>TAB") '(lambda () (interactive) (switch-to-buffer nil)))
+  (evil-define-key 'normal 'global (kbd "<leader>'") '(lambda () (interactive) (toggle-vterm)))
+
+  ;; (evil-define-key 'normal 'global (kbd "<leader> a a") 'android-emulator-start-logcat)
+  ;; (evil-define-key 'normal 'global (kbd "<leader> a q") 'android-emulator-quit-logcat)
+  ;; (evil-define-key 'normal 'global (kbd "<leader> a r") 'android-emulator-restart-logcat)
+   ;;; Buffers
+  (evil-define-key 'normal 'global (kbd "<leader> b b") 'consult-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader> b x") 'bury-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader> b i") 'ibuffer)
+  (evil-define-key 'normal 'global (kbd "<leader> b k") 'kill-current-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader> b p") 'project-list-buffers)
+  (evil-define-key 'normal 'global (kbd "<leader> b m") '(lambda () (interactive) (switch-to-buffer "*Messages*")))
+  (evil-define-key 'normal 'global (kbd "<leader> b s") '(lambda () (interactive) (switch-to-buffer "*scratch*")))
+  (which-key-add-key-based-replacements "<leader> b" "Buffers")
+
+  (evil-define-key 'normal 'global (kbd "<leader> c p") 'copilot-chat-transient)
+  (evil-define-key 'normal 'global (kbd "<leader> c c") 'claude-code-ide-menu)
+  ;; (evil-define-key 'normal 'global (kbd "<leader> c a") 'aidermacs-transient-menu)
+  (evil-define-key 'normal 'global (kbd "<leader> c e") 'consult-compile-error)
+  (evil-define-key 'normal 'global (kbd "<leader> c l") 'mk/compilation-get-errors)
+  (evil-define-key 'normal 'global (kbd "<leader> c m") 'copilot-chat-insert-commit-message)
+  (which-key-add-key-based-replacements "<leader> c" "Code")
+
+  (evil-define-key 'normal 'global (kbd "<leader> e a") 'embark-act)
+  (which-key-add-key-based-replacements "<leader> e" "Embark")
+
+  (evil-define-key 'normal 'global (kbd "<leader> f b") 'consult-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader> f d") 'delete-file)
+  (evil-define-key 'normal 'global (kbd "<leader> f e") '(lambda () (interactive) (find-file user-init-file)))
+  (evil-define-key 'normal 'global (kbd "<leader> f f") 'find-file)
+  (evil-define-key 'normal 'global (kbd "<leader> f o") 'consult-find)
+  (evil-define-key 'normal 'global (kbd "<leader> f l") 'consult-focus-lines)
+  (evil-define-key 'normal 'global (kbd "<leader> f n") 'create-file-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader> f r") 'consult-recent-file)
+  (evil-define-key 'normal 'global (kbd "<leader> f m") 'focus-mode)
+  (evil-define-key 'normal 'global (kbd "<leader> f s") 'save-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader> f i") 'consult-imenu-multi)
+  (which-key-add-key-based-replacements "<leader> f" "File")
+
+  (evil-define-key 'normal 'global (kbd "<leader> h s") 'highlight-symbol-at-point)
+  (evil-define-key 'normal 'global (kbd "<leader> h r") 'highlight-symbol-remove-all)
+  (evil-define-key 'normal 'global (kbd "<leader> h n") 'highlight-symbol-next)
+  (evil-define-key 'normal 'global (kbd "<leader> h N") 'highlight-symbol-prev)
+  (which-key-add-key-based-replacements "<leader> h" "Highlight")
+
+  (evil-define-key 'normal 'global (kbd "<leader> j j") 'jira-issues)
+  (evil-define-key 'normal 'global (kbd "<leader> j m") 'jira-issues-menu)
+  (evil-define-key 'normal 'global (kbd "<leader> j a") 'jira-issues-actions-menu)
+  (which-key-add-key-based-replacements "<leader> j" "Jira")
+
+  (evil-define-key 'normal 'global (kbd "<leader> m l") 'imenu-list-smart-toggle)
+  (evil-define-key 'normal 'global (kbd "<leader> m i") 'consult-imenu)
+  (evil-define-key 'normal 'global (kbd "<leader> m b") 'consult-bookmark)
+  (evil-define-key 'normal 'global (kbd "<leader> m c") 'consult-mode-command)
+  (which-key-add-key-based-replacements "<leader> m" "Misc")
+
+  (evil-define-key 'normal 'global (kbd "<leader> g g") 'google-this)
+
+  ;; Eval
+  (evil-define-key 'normal 'global (kbd "<leader> e b") 'eval-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader> e l") 'eval-last-sexp)
+
+  (evil-define-key 'normal 'global (kbd "<leader> s s") 'isearch-forward)
+  (evil-define-key 'normal 'global (kbd "<leader> s l") 'isearch-consult-line)
+  (evil-define-key 'normal 'global (kbd "<leader> s h") 'consult-isearch-history)
+  (evil-define-key 'normal 'global (kbd "<leader> s o") 'occur)
+
+  (evil-define-key 'normal 'global (kbd "<leader> t s") 'sort-lines)
+  (evil-define-key 'normal 'global (kbd "<leader> t x") 'delete-trailing-whitespace)
+  (evil-define-key 'normal 'global (kbd "<leader> t w") '(lambda () (interactive) (whitespace-mode 'toggle)))
+
+  (evil-define-key 'normal 'global (kbd "<leader> p f") 'consult-ripgrep)
+  (evil-define-key 'normal 'global (kbd "<leader> p d") 'project-dired)
+  (evil-define-key 'normal 'global (kbd "<leader> p g") 'project-find-regexp)
+  (evil-define-key 'normal 'global (kbd "<leader> p s") 'project-switch-project)
+  (evil-define-key 'normal 'global (kbd "<leader> p k") 'project-kill-buffers)
+  (evil-define-key 'normal 'global (kbd "<leader> p b") 'consult-project-buffer)
+
+  (evil-define-key 'normal 'global (kbd "<leader> o d") '(lambda () (interactive) (xwidget-webkit-browse-url "https://duckduckgo.com")))
+
+  (evil-define-key 'normal 'global (kbd "<leader> v s") 'magit-status)
+  (evil-define-key 'normal 'global (kbd "<leader> v b") 'magit-diff-buffer-file)
+  (evil-define-key 'normal 'global (kbd "<leader> v a") 'vc-annotate)
+  (evil-define-key 'normal 'global (kbd "<leader> v l") 'magit-log-buffer-file)
+  (evil-define-key 'normal 'global (kbd "<leader> v t") 'git-timemachine-toggle)
+
+  (evil-define-key 'normal 'global (kbd "<leader> w w") 'weather-scout-show-forecast)
+
+  (evil-define-key 'normal 'global (kbd "<leader> w t") 'window-layout-transpose)
+  (evil-define-key 'normal 'global (kbd "<leader> w r") 'window-layout-rotate-clockwise)
+  (evil-define-key 'normal 'global (kbd "<leader> w R") 'window-layout-rotate-anticlockwise)
+  (evil-define-key 'normal 'global (kbd "<leader> w f") 'window-layout-flip-topdown)
+  (evil-define-key 'normal 'global (kbd "<leader> w F") 'window-layout-flip-leftright)
+
+  (evil-define-key 'normal 'global (kbd "<leader> q r") 'restart-emacs)
+  (evil-define-key 'normal 'global (kbd "<leader> q q") 'save-buffers-kill-terminal)
+
+  (evil-select-search-module 'evil-search-module 'isearch)
+
+  (define-key evil-motion-state-map (kbd "<up>") 'ignore)
+  (define-key evil-motion-state-map (kbd "<down>") 'ignore)
+  (define-key evil-motion-state-map (kbd "<left>") 'ignore)
+  (define-key evil-motion-state-map (kbd "<right>") 'ignore)
+
+  (define-key evil-motion-state-map (kbd "C-+") #'(lambda () (interactive) (enlarge-window-horizontally 10)))
+  (define-key evil-motion-state-map (kbd "C--") #'(lambda () (interactive) (shrink-window-horizontally 10)))
+  (define-key evil-motion-state-map (kbd "C-M-+") #'(lambda () (interactive) (enlarge-window 3)))
+  (define-key evil-motion-state-map (kbd "C-M--") #'(lambda () (interactive) (shrink-window 3)))
+
+  (setq evil-normal-state-cursor '(box "DodgerBlue")
+        evil-insert-state-cursor '(bar "DeepPink")
+        evil-visual-state-cursor '(hollow "orchid"))
+  ;; (evil-set-initial-state 'minibuffer-mode 'emacs)
+
+  ;; (evil-define-key 'normal evil-ex-map "q" 'mk/safe-kill-buffer-and-window)
+  (evil-mode 1))
+
+(with-eval-after-load 'evil
+  (dolist (state '(normal insert visual motion emacs))
+    (evil-define-key state 'global (kbd "s-M") nil)
+    (evil-define-key state 'global (kbd "C-.") nil)
+    (evil-define-key state 'global (kbd "C-k") nil)))
+
+(use-package evil-collection
+  :after evil
+  :defer 0.7
+  :demand t
+  :config
+  (evil-collection-init)
+  ;; TAB endast för prog-mode (så vertico, magit etc. behåller sina bindningar)
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              (evil-local-set-key 'insert (kbd "TAB") 'indent-for-tab-command)
+              (evil-local-set-key 'insert (kbd "<tab>") 'indent-for-tab-command)
+              (evil-local-set-key 'normal (kbd "TAB") 'indent-for-tab-command)
+              (evil-local-set-key 'normal (kbd "<tab>") 'indent-for-tab-command)
+              (evil-local-set-key 'visual (kbd "TAB") 'indent-for-tab-command)
+              (evil-local-set-key 'visual (kbd "<tab>") 'indent-for-tab-command))))
+
+;; (use-package evil-mc
+;;   :hook (evil-mode . bal-evil-mc-mode)
+;;   :bind (
+;;          ("C-M-e" . evil-mc-make-all-cursors)
+;;          ("C-M-n" . evil-mc-make-and-goto-next-match)
+;;          ("C-M-s" . evil-mc-skip-and-goto-next-match)
+;;          ("C-M-p" . evil-mc-make-and-goto-prev-match)
+;;          ("C-M-j" . evil-mc-make-cursor-move-next-line)
+;;          ("C-M-k" . evil-mc-make-cursor-move-prev-line))
+;;   :custom
+;;   (evil-mc-mode-line-text-inverse-colors t)
+;;   (evil-mc-undo-cursors-on-keyboard-quit t)
+;;   (evil-mc-mode-line-text-cursor-color t)
+;;   :config
+;;   (evil-define-key 'visual evil-mc-key-map
+;;     "A" #'evil-mc-make-cursor-in-visual-selection-end
+;;     "I" #'evil-mc-make-cursor-in-visual-selection-beg))
+
+(use-package evil-matchit
+  :after evil-collection
+  :config
+  (global-evil-matchit-mode 1))
+
+;; (use-package evil-surround
+;;   :after evil
+;;   :commands global-evil-surround-mode
+;;   :custom
+;;   (evil-surround-pairs-alist
+;;    '((?\( . ("(" . ")"))
+;;      (?\[ . ("[" . "]"))
+;;      (?\{ . ("{" . "}"))
+
+;;      (?\) . ("(" . ")"))
+;;      (?\] . ("[" . "]"))
+;;      (?\} . ("{" . "}"))
+
+;;      (?< . ("<" . ">"))
+;;      (?> . ("<" . ">"))))
+;;   :hook (after-init . global-evil-surround-mode))
+
+(use-package evil-commentary
+  :ensure t
+  :after (evil prog-mode)
+  :init
+  (evil-commentary-mode 1))
+
+;; (use-package evil-visualstar
+;;   :ensure t
+;;   :after evil
+;;   :hook (after-init . global-evil-visualstar-mode))
+
+(use-package evil-snipe
+  :ensure t
+  :after evil
+  :config
+  (evil-snipe-mode +1)
+  (evil-snipe-override-mode +1))
+
+(use-package hardtime
+  :ensure nil
+  :after evil
+  :config
+  (setq hardtime-notification-type 'knockknock)
+  (global-hardtime-mode 1))
+
+(use-package pulsar
+  :hook (after-init . pulsar-global-mode)
+  :config
+  (setopt pulsar-pulse t
+          pulsar-delay 0.055
+          pulsar-iterations 12
+          pulsar-face 'pulsar-cyan
+          pulsar-highlight-face 'pulsar-yellow
+          pulsar-pulse-functions '(ace-window
+                                   backward-page
+                                   bookmark-jump
+                                   consult--jump
+                                   delete-other-windows
+                                   delete-window
+                                   evil-delete
+                                   evil-delete-line
+                                   evil-jump-item
+                                   evil-scroll-down
+                                   evil-scroll-line-down
+                                   evil-scroll-line-up
+                                   evil-scroll-page-down
+                                   evil-scroll-page-up
+                                   evil-scroll-up
+                                   evil-window-down
+                                   evil-window-left
+                                   evil-window-right
+                                   evil-window-rotate-downwards
+                                   evil-window-rotate-upwards
+                                   evil-window-split
+                                   evil-window-up
+                                   evil-window-vsplit
+                                   evil-yank
+                                   evil-yank-line
+                                   forward-page
+                                   goto-char
+                                   handle-switch-frame
+                                   move-to-window-line-top-bottom
+                                   next-buffer
+                                   org-backward-heading-same-level
+                                   org-forward-heading-same-level
+                                   org-next-visible-heading
+                                   org-previous-visible-heading
+                                   other-window
+                                   outline-backward-same-level
+                                   outline-forward-same-level
+                                   outline-next-visible-heading
+                                   outline-previous-visible-heading
+                                   outline-up-heading
+                                   previous-buffer
+                                   recenter
+                                   recenter-top-bottom
+                                   reposition-window
+                                   scroll-down-command
+                                   scroll-up-command
+                                   switch-to-buffer
+                                   switch-to-buffer-other-frame
+                                   switch-to-buffer-other-tab
+                                   switch-to-buffer-other-window
+                                   tab-close
+                                   tab-new
+                                   tab-next
+                                   windmove-down
+                                   windmove-left
+                                   windmove-right
+                                   windmove-swap-states-down
+                                   windmove-swap-states-left
+                                   windmove-swap-states-right
+                                   windmove-swap-states-up
+                                   windmove-up
+                                   )))
+
+;; (defun my/recenter-after-jump (&rest _)
+;;   "Centrera fönstret efter hoppkommandon i Evil."
+;;   (recenter))
+
+;; (dolist (fn '(evil-jump-backward
+;;               evil-jump-forward
+;;               evil-forward-section-begin
+;;               evil-backward-section-begin
+;;               evil-forward-sentence-begin
+;;               evil-backward-sentence-begin
+;;               evil-goto-definition))
+;;   (advice-add fn :after #'my/recenter-after-jump))
+
+;;; Provide
+(provide 'mk-evil)
+;;; mk-evil.el ends here.

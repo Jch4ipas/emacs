@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: guard let 
+# key: guard
+# --
+
+guard let ${1:name} = ${2:type}
+else { return ${3:retValue} }

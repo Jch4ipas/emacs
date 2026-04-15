@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: repeat while 
+# key: repeat
+# --
+repeat {
+    ${1:statement}
+} while ${2:condition}
+
