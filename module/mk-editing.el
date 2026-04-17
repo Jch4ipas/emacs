@@ -119,5 +119,32 @@
   :config
   (ultra-scroll-mode 1))
 
+;;; Browse by keyword style VS Code / macOS
+(defun vscode-forward-word ()
+  (interactive "^")
+  (let ((start (point)))
+    (skip-chars-forward " \t\n\r")                ;; 1. Space
+    (skip-chars-forward "^a-zA-Z0-9_ \t\n\r")     ;; 2. Punctuation
+    (skip-chars-forward "a-zA-Z0-9_")             ;; 3. Word
+    ;; If we didn't move, force move backward
+    (when (and (= start (point)) (not (eobp)))
+      (forward-char 1))))
+
+(defun vscode-backward-word ()
+  (interactive "^")
+  (let ((start (point)))
+    (skip-chars-backward " \t\n\r")
+    (skip-chars-backward "^a-zA-Z0-9_ \t\n\r")
+    (skip-chars-backward "a-zA-Z0-9_")
+    ;; If we didn't move, force move backward
+    (when (and (= start (point)) (not (bobp)))
+      (backward-char 1))))
+
+(global-set-key (kbd "M-<right>") 'vscode-forward-word)
+(global-set-key (kbd "M-<left>")  'vscode-backward-word)
+(global-set-key (kbd "C-<right>") 'vscode-forward-word)
+(global-set-key (kbd "C-<left>")  'vscode-backward-word)
+
+
 (provide 'mk-editing)
 ;;; mk-editing.el ends here
