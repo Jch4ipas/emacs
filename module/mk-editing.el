@@ -111,5 +111,13 @@
   :config
   (undo-fu-session-global-mode))
 
+(use-package ultra-scroll ; Smooth scrolling
+  :ensure t
+  :init
+  (setq scroll-conservatively 101
+        scroll-margin 0)
+  :config
+  (ultra-scroll-mode 1))
+
 (provide 'mk-editing)
 ;;; mk-editing.el ends here
