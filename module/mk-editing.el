@@ -101,5 +101,15 @@
   :config
   (setq avy-single-candidate-jump t))
 
+(use-package undo-fu
+  :ensure t
+  :bind (("s-z"   . undo-fu-only-undo)
+         ("s-Z"   . undo-fu-only-redo)))
+
+(use-package undo-fu-session
+  :ensure t
+  :config
+  (undo-fu-session-global-mode))
+
 (provide 'mk-editing)
 ;;; mk-editing.el ends here
