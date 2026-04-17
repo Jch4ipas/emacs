@@ -43,7 +43,10 @@
   (window-sides-vertical t)
   (split-width-threshold 300)
   (switch-to-buffer-obey-display-actions t)
+  (mouse-wheel-tilt-scroll t) ; enable horizontal scroll
+  (mouse-wheel-flip-direction t) ; inverse horizontal scroll
   :config
+  (pixel-scroll-precision-mode 1) ; to make work horizontal scroll with trackpad
   (set-display-table-slot standard-display-table 0 ?\ )
   ;; (set-window-fringes (selected-window) 16 10)
   ;; (set-window-margins (selected-window) 10 10)
