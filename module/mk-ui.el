@@ -110,6 +110,7 @@
   :ensure nil
   :defer t
   :custom
+  (dired-auto-revert-buffer t)
   (dired-listing-switches "-aBhl --group-directories-first")
   :config
   (with-eval-after-load 'evil-collection

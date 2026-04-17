@@ -31,7 +31,7 @@
   ;; (delete-by-moving-to-trash t)
   ;; (display-time-default-load-average nil) ; this information is useless for most
   (find-file-visit-truename t)              ; Resolve symlinks to avoid VC path issues
-  ;; (global-auto-revert-non-file-buf t)
+  (global-auto-revert-non-file-buf t)
   (help-window-select t)
   ;; ;; (indicate-buffer-boundaries 'right) ; Show buffer top and bottom in the margin
   ;; (line-number-mode nil)
