@@ -145,6 +145,7 @@
 (global-set-key (kbd "C-<right>") 'vscode-forward-word)
 (global-set-key (kbd "C-<left>")  'vscode-backward-word)
 
+(delete-selection-mode 1)
 
 (provide 'mk-editing)
 ;;; mk-editing.el ends here
