@@ -347,66 +347,66 @@ Only scrolls if compilation window is visible."
 ;;         flyover-background-lightness 35
 ;;         flyover-border-match-icon t
 ;;         flyover-show-icon t))
-(use-package flyover
-  :ensure nil
-:load-path (lambda () (expand-file-name "dependance" user-emacs-directory))
-  :hook (flycheck-mode . flyover-mode)
-  :config
-  (add-hook 'flycheck-mode-hook #'flyover-mode)
-  ;; (set-face-attribute 'flyover-info nil
-  ;;                     :foreground "Cyan1"
-  ;;                     :background "Cyan4")
+;;(use-package flyover
+;;  :ensure ;; ;; t
+;; ;; :load-path (lambda () (expand-file-name "dependance" user-emacs-directory))
+;; ;;   :hook (flycheck-mode . flyover-mode)
+;; ;;   :config
+;; ;;   (add-hook 'flycheck-mode-hook #'flyover-mode)
+;; ;;   ;; (set-face-attribute 'flyover-info nil
+;; ;;   ;;                     :foreground "Cyan1"
+;; ;;   ;;                     :background "Cyan4")
 
-  ;; (set-face-attribute 'flyover-warning nil
-  ;;                     :foreground "black"
-  ;;                     :background "yellow")
+;; ;;   ;; (set-face-attribute 'flyover-warning nil
+;; ;;   ;;                     :foreground "black"
+;; ;;   ;;                     :background "yellow")
 
-  ;; ;; Red background with white text for errors
-  ;; (set-face-attribute 'flyover-error nil
-  ;;                     :foreground "red"
-  ;;                     :background "red4")
-  :custom
-  ;; Checker settings
-  (flyover-checkers '(flymake flycheck))
-  (flyover-levels '(error warning info))
-  (flyover-show-at-eol t)
-  (flyover-line-position-offset 0)
+;; ;;   ;; ;; Red background with white text for errors
+;; ;;   ;; (set-face-attribute 'flyover-error nil
+;; ;;   ;;                     :foreground "red"
+;; ;;   ;;                     :background "red4")
+;; ;;   :custom
+;; ;;   ;; Checker settings
+;; ;;   (flyover-checkers '(flymake flycheck))
+;; ;;   (flyover-levels '(error warning info))
+;; ;;   (flyover-show-at-eol t)
+;; ;;   (flyover-line-position-offset 0)
 
-  ;; Appearance
-  (flyover-use-theme-colors t)
-  (flyover-background-lightness 40)
+;; ;;   ;; Appearance
+;; ;;   (flyover-use-theme-colors t)
+;; ;;   (flyover-background-lightness 40)
 
-  (flyover-icon-background-tint 'darker)
-  (flyover-icon-background-tint-percent 40)
+;;   (flyover-icon-background-tint 'darker)
+;;   (flyover-icon-background-tint-percent 40)
 
-  (flyover-icon-tint 'lighter)
-  (flyover-icon-tint-percent 50)
+;;   (flyover-icon-tint 'lighter)
+;;   (flyover-icon-tint-percent 50)
 
-  (flyover-text-tint 'lighter)
-  (flyover-text-tint-percent 80)
+;;   (flyover-text-tint 'lighter)
+;;   (flyover-text-tint-percent 80)
 
-  ;; Padding
-  (flyover-icon-left-padding 0.55)
+;;   ;; Padding
+;;   (flyover-icon-left-padding 0.55)
 
-  ;; Border styles: none, pill, arrow, slant, slant-inv, flames, pixels
-  (flyover-border-style 'pill)
-  (flyover-border-match-icon t)
+;;   ;; Border styles: none, pill, arrow, slant, slant-inv, flames, pixels
+;;   (flyover-border-style 'pill)
+;;   (flyover-border-match-icon t)
 
-  ;; Display settings
-  (flyover-hide-checker-name t)
-  (flyover-show-virtual-line t)
-  (flyover-virtual-line-type 'none)
-  (flyover-line-position-offset 1)
-  (flyover-show-error-id t)
+;;   ;; Display settings
+;;   (flyover-hide-checker-name t)
+;;   (flyover-show-virtual-line t)
+;;   (flyover-virtual-line-type 'none)
+;;   (flyover-line-position-offset 1)
+;;   (flyover-show-error-id t)
 
-  ;; Message wrapping
-  (flyover-wrap-messages t)
-  (flyover-max-line-length 80)
+;;   ;; Message wrapping
+;;   (flyover-wrap-messages t)
+;;   (flyover-max-line-length 80)
 
-  ;; Performance
-  (flyover-debounce-interval 0.2)
-  (flyover-cursor-debounce-interval 0.3)
-  (flyover-display-mode 'always))
+;;   ;; Performance
+;;   (flyover-debounce-interval 0.2)
+;;   (flyover-cursor-debounce-interval 0.3)
+;;   (flyover-display-mode 'always))
 
 (use-package flycheck-eglot
   :ensure nil
