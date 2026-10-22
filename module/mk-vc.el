@@ -5,51 +5,38 @@
 ;;; Code:
 
 (use-package transient
-  :ensure t)
+  :defer t)
 
 (use-package magit
-  :ensure t
+  :defer t
   :bind (("C-x g" . magit-status)
          ("C-c g" . magit-file-dispatch))
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
 (use-package git-timemachine
-  :ensure t
   :defer t
   :commands (git-timemachine git-timemachine-toggle))
 
-(defun my/enable-diff-hl-if-git ()
-  "Enable diff-hl-mode if the current buffer is part of a Git repository."
-  (when-let* ((file buffer-file-name)
-              (backend (vc-backend file)))
-    (when (eq backend 'Git)
-      (diff-hl-mode 1)
-      (when (display-graphic-p)
-        (diff-hl-margin-mode 1)))))
-
-(defun my/diff-hl-reset-reference-revision ()
-  "Reset diff-hl reference revision when switching buffers between repos."
-  (when (and buffer-file-name
-             (bound-and-true-p diff-hl-mode))
-    (setq-local diff-hl-reference-revision nil)
-    (vc-file-clearprops buffer-file-name)))
-
 (use-package diff-hl
-  :ensure t
   :demand t
-  :hook ((prog-mode . my/enable-diff-hl-if-git)
-         (buffer-list-update . my/diff-hl-reset-reference-revision))
-  :config
-  (global-diff-hl-mode 1)
-  (setopt diff-hl-disable-on-remote t)
+  :hook ((magit-pre-refresh . diff-hl-magit-pre-refresh)
+         (magit-post-refresh . diff-hl-magit-post-refresh)
+         (dired-mode . diff-hl-dired-mode))
   :custom
   (diff-hl-side 'left)
+  (diff-hl-disable-on-remote t)
+  (diff-hl-update-async t)              ; run git in the background
   (diff-hl-margin-symbols-alist '((insert . "┃")
                                   (delete . "┃")
                                   (change . "┃")
                                   (unknown . "?")
-                                  (ignored . "i"))))
+                                  (ignored . "i")))
+  :config
+  (global-diff-hl-mode 1)
+  (diff-hl-flydiff-mode 1)              ; update while typing, not only on save
+  (when (display-graphic-p)
+    (diff-hl-margin-mode 1)))
 
 
 ;;
