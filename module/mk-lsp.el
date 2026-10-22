@@ -38,6 +38,16 @@
              (mk/eglot-server-available-p))
     (eglot-ensure)))
 
+(defun mk/eglot-organize-imports ()
+  "Remove the unused imports, then sort and merge the others.
+typescript-language-server's \"Organize Imports\" only sorts and merges,
+removing unused imports is a separate action; servers without that
+action (pylsp, intelephense...) just organize."
+  (interactive)
+  (ignore-errors
+    (eglot-code-actions (point-min) (point-max) "source.removeUnusedImports" t))
+  (eglot-code-actions (point-min) (point-max) "source.organizeImports" t))
+
 (use-package eglot
   :ensure nil
   :defer t
@@ -47,7 +57,7 @@
               ("C-c l r" . eglot-rename)
               ("C-c l a" . eglot-code-actions)
               ("C-c l f" . eglot-format)
-              ("C-c l o" . eglot-code-action-organize-imports)
+              ("C-c l o" . mk/eglot-organize-imports)
               ("C-c l q" . eglot-shutdown)
               ("C-c l R" . eglot-reconnect))
   :custom
