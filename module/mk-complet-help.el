@@ -74,7 +74,8 @@ DIRECT-KEY is shown when the key of COMMAND cannot be found."
        ["Aide"
         ,(mk/menu-entry "h" "Doc du langage" 'devdocs-lookup)
         ,(mk/menu-entry "T" "Exemples de commande" 'tldr)
-        ,(mk/menu-entry "I" "Assistant IA" 'gptel)
+        ,(mk/menu-entry "C" "Claude Code" 'claude-code-ide-menu)
+        ,(mk/menu-entry "I" "Assistant IA (EPFL)" 'gptel)
         ,(mk/menu-entry "K" "Toutes les touches ici" 'embark-bindings)
         ,(mk/menu-entry "!" "Une astuce" 'mk/tip)
         ,(mk/menu-entry "P" "Changer de profil" 'mk/switch-profile)]])
@@ -119,6 +120,8 @@ DIRECT-KEY is shown when the key of COMMAND cannot be found."
     "C-x C-a b pose un point d'arrêt, C-x C-a d lance le débogueur."
     "C-h D ouvre la doc du langage, C-h T des exemples de commandes du terminal."
     "C-c i i ouvre le chat IA, C-c i r réécrit la sélection."
+    "C-c C ouvre Claude Code à droite : il voit ton fichier et ta sélection."
+    "Dans un diff de Claude Code, q puis y accepte la modification, n la refuse."
     "C-c c note une tâche ou une idée sans quitter ce que tu fais ; C-c a montre l'agenda."
     "C-x 3 coupe l'écran en deux, C-x o passe à l'autre fenêtre, C-x 0 la ferme."
     "C-x 4 . ouvre la définition dans l'autre fenêtre."
