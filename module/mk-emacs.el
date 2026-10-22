@@ -11,6 +11,8 @@
                         (global-hl-line-mode 1)
                         (display-battery-mode 1)
                         (save-place-mode 1)
+                        (savehist-mode 1)
+                        (recentf-mode 1)
                         (global-auto-revert-mode 1)))
   :custom
   (backup-by-copying t)
@@ -50,7 +52,13 @@
   (set-display-table-slot standard-display-table 0 ?\ )
   ;; (set-window-fringes (selected-window) 16 10)
   ;; (set-window-margins (selected-window) 10 10)
-  (setopt load-prefer-newer t)
+  (setopt history-length 300
+          savehist-additional-variables '(search-ring regexp-search-ring)
+          recentf-max-saved-items 300
+          recentf-auto-cleanup 'never
+          auto-revert-avoid-polling t
+          kill-do-not-save-duplicates t
+          xref-search-program 'ripgrep)
   (setopt confirm-kill-emacs (lambda (prompt)
                                (y-or-n-p-with-timeout prompt 2 nil)))
   (setopt use-short-answers t
@@ -101,7 +109,10 @@
      ns-use-thin-smoothing t
      insert-directory-program "/opt/homebrew/bin/gls"
      dired-listing-switches "-aBhl --group-directories-first"
-     browse-url-browser-function #'mk/browser-split-window)))
+     ;; Only use the embedded browser when Emacs was built with xwidgets
+     browse-url-browser-function (if (featurep 'xwidget-internal)
+                                     #'mk/browser-split-window
+                                   #'browse-url-default-browser))))
 ;;;###autoload
 (defun mk/safe-kill-buffer-and-window ()
   "Safely kill the current buffer and delete its window if possible.
@@ -127,15 +138,19 @@
         (when (window-live-p win)
           (delete-window win)))))))
 
-(defun mk/browser-split-window (url &optional new-window)
-  "Create a new browser (as URL as NEW-WINDOW) window to the right of the current one."
+(defun mk/browser-split-window (url &optional _new-window)
+  "Open URL in an xwidget browser window to the right of the current one."
   (interactive)
-  (let ((ignore-window-parameters t)
-        (dedicated-p (window-dedicated-p)))
+  (let ((ignore-window-parameters t))
     (delete-other-windows)
     (split-window-horizontally)
     (other-window 1)
     (xwidget-webkit-browse-url url)))
+
+(setq backup-directory-alist `(("." . ,(expand-file-name "backups" user-emacs-directory))))
+(setq auto-save-file-name-transforms
+      `((".*" ,(expand-file-name "auto-save-list/" user-emacs-directory) t)))
+(setq create-lockfiles nil)
 
 (provide 'mk-emacs)
 ;;; mk-emacs.el ends here
