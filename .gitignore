@@ -40,3 +40,6 @@ flycheck_*.el
 /package-quickstart.el
 /package-quickstart.elc
 /eln-cache/
+
+# Debug adapters downloaded for dape (js-debug...)
+/debug-adapters/
