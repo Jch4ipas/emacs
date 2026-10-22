@@ -24,6 +24,7 @@
   (vundo-compact-display t))
 
 (use-package multiple-cursors
+  :unless (mk/module-p 'mk-evil)          ; does not work well with evil
   :defer t
   :bind (("s-d"           . mc/mark-next-like-this)     ; like Cmd+D in VS Code
          ("s-D"           . mc/skip-to-next-like-this)
