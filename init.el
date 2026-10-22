@@ -25,6 +25,7 @@
 (require 'mk-completion)      ;; Les beaux menus de recherche modernes
 (require 'mk-code-completion) ;; L'auto-complétion (menu déroulant dans le code)
 (require 'mk-development)     ;; Les moteurs de code (LSP, Tree-sitter)
+(require 'mk-lsp)             ;; Serveurs de langage (eglot)
 (require 'mk-editing)         ;; Outils pratiques (auto-fermeture des parenthèses)
 (require 'mk-web)             ;; Mode React/TSX and other !
 (require 'mk-term)      ;; Le terminal (vterm)
