@@ -45,8 +45,8 @@
         treemacs-move-files-by-mouse-dragging nil
         treemacs-move-forward-on-expand t
         treemacs-pulse-on-success t
-        treemacs-file-event-delay 0
-        treemacs-deferred-git-apply-delay 0
+        treemacs-file-event-delay 1000
+        treemacs-deferred-git-apply-delay 0.5
         treemacs-git-commit-diff-mode 1
         treemacs-show-hidden-files nil
         treemacs-sorting 'treemacs--sort-alphabetic-case-insensitive-asc
@@ -62,12 +62,6 @@
 
 (use-package treemacs-magit
   :after treemacs magit)
-
-(use-package treemacs-evil
-  :after (treemacs evil))
-
-(use-package project-treemacs
-  :after treemacs)
 
 (provide 'mk-treemacs)
 ;;; mk-treemacs.el ends here
