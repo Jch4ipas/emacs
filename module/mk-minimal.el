@@ -85,6 +85,9 @@
         treesit-auto-install-grammar 'ask
         treesit-font-lock-level 4)
 (add-to-list 'auto-mode-alist '("\\.[cm]?jsx\\'" . tsx-ts-mode))
+;; Built into Emacs 31 but neither autoloaded nor associated with .md
+(autoload 'markdown-ts-mode "markdown-ts-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-ts-mode))
 
 ;;; Minibuffer completion: vertico, orderless, marginalia, consult, embark
 (use-package vertico
