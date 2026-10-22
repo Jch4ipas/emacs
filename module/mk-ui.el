@@ -52,26 +52,6 @@
 ;;   (setq darkroom-text-scale-increase 1.4
 ;;         darkroom-margins '(5 . 0)))
 
-(use-package focus-delight-mode
-  :ensure nil
-  :defer t
-  :bind ("C-x C-d" . focus-delight-mode-for-mode)
-  :config
-  (setopt focus-delight-mode-margin-style 'left-only
-          focus-delight-mode-margin-style 'fixed
-          focus-delight-mode-left-margin 10
-          focus-delight-mode-center-text t
-          focus-delight-mode-scale-percent 120)
-  ;; (setopt presentation-mode-scale-percent 130
-  ;;         presentation-mode-hide-mode-line t
-  ;;         presentation-mode-hide-line-numbers t)
-  (add-hook 'focus-delight-mode-enabled-hook
-            (lambda ()
-              (breadcrumb-mode -1)))
-  (add-hook 'focus-delight-mode-disabled-hook
-            (lambda ()
-              (breadcrumb-mode 1))))
-
 (use-package punch-line
   :ensure nil
  :load-path (lambda () (expand-file-name "dependance/punch-line" user-emacs-directory))
@@ -103,8 +83,8 @@
           punch-show-battery-info t
           punch-show-flycheck-info t
           punch-show-weather-info t
-          punch-weather-latitude "56.7365"
-          punch-weather-longitude "16.2981"
+          punch-weather-latitude "46.52"   ; Lausanne (same as the dashboard)
+          punch-weather-longitude "6.56"
           punch-line-music-max-length 80
           punch-line-section-backgrounds nil
           punch-line-section-background-tint-start -15
@@ -113,28 +93,19 @@
 
 
 (use-package imenu-list
-  :after imenu-list
-  :defer nil
+  :defer t
   :bind
   ("C-c i" . 'imenu-list-smart-toggle)
   :custom
   (imenu-list-focus-after-activation t)
   (imenu-list-auto-resize t))
 
-(use-package candyshop
-  ;; :hook (emacs-startup . candyshop-init)
-  :ensure nil
-  :custom
-  (candyshop-alpha-values '(100 92))
-  :bind ("C-c t c" . candyshop-toggle))
-
 (use-package nerd-icons-ibuffer
-  :ensure nil
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode)
   :custom
-  (setq nerd-icons-ibuffer-icon t)
-  (setq nerd-icons-ibuffer-color-icon t)
-  (setq nerd-icons-ibuffer-human-readable-size t))
+  (nerd-icons-ibuffer-icon t)
+  (nerd-icons-ibuffer-color-icon t)
+  (nerd-icons-ibuffer-human-readable-size t))
 
 (use-package dired
   :ensure nil
@@ -149,7 +120,7 @@
       "l" 'dired-find-file)))
 
 (use-package which-key
-  :ensure nil
+  :ensure nil                           ; built into Emacs 30+
   :defer t
   :init
   (run-with-idle-timer 1.5 nil #'which-key-mode)
