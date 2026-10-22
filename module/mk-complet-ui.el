@@ -1,7 +1,7 @@
 ;;; mk-complet-ui.el --- Look of the complet profile -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;; Loaded after mk-minimal.el, whose look it replaces:
-;;   - oxocarbon theme and a transparent frame
+;;   - a transparent frame (the theme stays minimal's modus-vivendi)
 ;;   - welcome-dashboard at startup
 ;;   - doom-modeline
 ;;   - minibuffer menus in a floating frame (vertico-posframe)
@@ -10,15 +10,7 @@
 ;;     highlighting of the symbol at point
 ;;; Code:
 
-;;; Theme and transparency
-(add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
-
-(use-package autothemer
-  :demand t
-  :config
-  (mapc #'disable-theme custom-enabled-themes) ; modus-vivendi from mk-minimal
-  (load-theme 'oxocarbon t))
-
+;;; Transparency (the theme stays modus-vivendi, set by mk-minimal)
 (set-frame-parameter nil 'alpha-background 85)
 (add-to-list 'default-frame-alist '(alpha-background . 85))
 
