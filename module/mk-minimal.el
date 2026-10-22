@@ -15,7 +15,7 @@
 ;;
 ;; Keys (Emacs defaults are kept; s- = Cmd, M- = Option):
 ;;   s-p  find file in project   s-P  M-x            s-F  search in project
-;;   C-x b  buffers (preview)    M-s l  search buffer M-g i  symbols in file
+;;   C-x b / S-TAB  buffers (preview)    M-s l  search buffer M-g i  symbols in file
 ;;   F12 / S-F12 / M-F12  definition / references / back
 ;;   F2  rename   M-F  format   M-n / M-p  next / previous error   s-M  errors
 ;;   C-.  actions on thing at point (embark)   M-j  jump anywhere (avy)
@@ -123,6 +123,7 @@
 (use-package consult
   :defer t
   :bind (("C-x b"   . consult-buffer)
+         ("<backtab>" . consult-buffer)   ; S-TAB, quicker to reach (not in Org)
          ("C-x p b" . consult-project-buffer)
          ("M-y"     . consult-yank-pop)
          ("M-g g"   . consult-goto-line)
