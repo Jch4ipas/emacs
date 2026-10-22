@@ -70,5 +70,43 @@
                    (string-trim (buffer-string)))))
 (add-hook 'emacs-startup-hook #'mk/refresh-shell-path)
 
+;;; Recompile packages after an Emacs upgrade
+;; Bytecode compiled by an older Emacs can break with a newer one (e.g.
+;; "void-variable diff-hl-mode--set-explicitly" after 30 -> 31), so when the
+;; Emacs version changes every package is recompiled in a background process.
+(defvar mk/emacs-version-file
+  (expand-file-name "var/emacs-version" user-emacs-directory)
+  "File holding the Emacs version that last compiled the packages.")
+
+(defun mk/recompile-packages-if-emacs-changed ()
+  "Recompile all packages in the background when `emacs-version' changed."
+  (unless (equal emacs-version
+                 (and (file-readable-p mk/emacs-version-file)
+                      (with-temp-buffer
+                        (insert-file-contents mk/emacs-version-file)
+                        (string-trim (buffer-string)))))
+    (message "New Emacs version: recompiling packages in the background...")
+    (make-process
+     :name "recompile-packages"
+     :buffer " *recompile-packages*"
+     :noquery t
+     :command (list (expand-file-name invocation-name invocation-directory)
+                    "--batch" "--eval"
+                    (format "%S" `(progn
+                                    (require 'package)
+                                    (package-activate-all)
+                                    (setq byte-compile-warnings nil)
+                                    (dolist (dir (directory-files ,package-user-dir t "^[^.]"))
+                                      (when (file-directory-p dir)
+                                        (ignore-errors (byte-recompile-directory dir 0 t)))))))
+     :sentinel (lambda (proc _event)
+                 (when (and (eq (process-status proc) 'exit)
+                            (zerop (process-exit-status proc)))
+                   (make-directory (file-name-directory mk/emacs-version-file) t)
+                   (with-temp-file mk/emacs-version-file (insert emacs-version))
+                   (message "Packages recompiled for Emacs %s, restart Emacs to use them"
+                            emacs-version))))))
+(add-hook 'emacs-startup-hook #'mk/recompile-packages-if-emacs-changed)
+
 (provide 'mk-base)
 ;;; mk-base.el ends here
