@@ -42,7 +42,9 @@
 
 (defun mk/apply-path (path)
   "Use PATH (a colon separated string) for `exec-path' and subprocesses."
-  (let ((dirs (seq-uniq (split-string path ":" t))))
+  ;; expand-file-name: zsh keeps a literal "~" for entries such as
+  ;; ~/.dotnet/tools, which subprocesses would not find
+  (let ((dirs (seq-uniq (mapcar #'expand-file-name (split-string path ":" t)))))
     (setenv "PATH" (string-join dirs ":"))
     (setq exec-path (append dirs (list exec-directory)))))
 
