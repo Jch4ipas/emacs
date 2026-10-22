@@ -16,7 +16,7 @@
 ;;; Code:
 
 (defconst mk/complet-modules
-  '(mk-minimal mk-lsp mk-complet-ui)
+  '(mk-minimal mk-lsp mk-complet-ui mk-complet-edit)
   "Modules of the complet profile: minimal plus extra modules.")
 
 (defconst mk/profiles
