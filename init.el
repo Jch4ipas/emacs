@@ -14,25 +14,10 @@
 ;; (load (expand-file-name "suppress-warnings" cser-emacs-directory) nil t)
 
 (electric-indent-mode 0)
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; (package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
-(unless (package-installed-p 'vterm)
-  (package-install 'vterm))
-(use-package which-key
-  :ensure t
-  :config
-  (which-key-mode))
+(dolist (dir '("module" "dependance"))
+  (add-to-list 'load-path (expand-file-name dir user-emacs-directory)))
 
-(dolist (path (list
-               (expand-file-name "module" user-emacs-directory)))
-  (add-to-list 'load-path path))
-(dolist (path (list
-               (expand-file-name "dependance" user-emacs-directory)))
-  (add-to-list 'load-path path))
-
+(require 'mk-base)      ;; Paquets et PATH du shell (partagé)
 (require 'mk-core)      ;; Optimisations de base
 (require 'mk-theme)     ;; Tes thèmes (Oxocarbon, etc.)
 (require 'mk-emacs)     ;; Nettoyage de l'interface (barres moches en moins)
