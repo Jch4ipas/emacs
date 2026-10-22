@@ -7,7 +7,8 @@
   :defer t
   :commands (treemacs treemacs-select-window)
   :hook ((treemacs-mode . treemacs-project-follow-mode))
-  :bind (("M-J" . #'treemacs-find-file)
+  :bind (("s-b" . #'treemacs)               ; like Cmd+B in VS Code
+         ("M-J" . #'treemacs-find-file)
          ("M-0" . #'treemacs))
   :config
   (let* ((font-family "SF Pro Display")

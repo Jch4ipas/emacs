@@ -32,7 +32,8 @@
 (require 'mk-vc)        ;; Magit (L'intégration Git)
 (require 'mk-tools)     ;; Outils standards (helpful, vundo, snippets...)
 
-;; (require 'mk-treemacs)  ;; L'explorateur de fichiers à gauche
+(require 'mk-treemacs)  ;; L'explorateur de fichiers à gauche
+(require 'mk-ide)       ;; Touches et fonctions de VS Code
 ;; (require 'mk-evil)               ;; Change complétement le fonctionnement de base de emacs et ressemble plus à vim
 ;; (require 'mk-misc)               ;;  Plein de problême si ta version de emacs n'est pas au moins de 30. C'est ici que se cachent les trucs bizarres comme "knockknock" !
 ;; (require 'mk-ai)                 ;; Fait souvent planter si tu n'as pas configuré de clé API ChatGPT/Copilot.
