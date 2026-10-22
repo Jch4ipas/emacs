@@ -148,15 +148,15 @@
 ;;	      ("C-k" . drag-stuff-up)))
 
 (use-package dumb-jump
-  :ensure t
   :defer t
+  :commands dumb-jump-xref-activate
+  :init
+  ;; Fallback when no language server knows the symbol (depth 90 = last)
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate 90)
   :custom
   (dumb-jump-window 'other)
   (dumb-jump-quiet t)
-  :config
-  (put 'dumb-jump-go 'byte-obsolete-info nil)
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-  (setopt xref-show-definitions-function #'xref-show-definitions-completing-read))
+  (dumb-jump-force-searcher 'rg))
 
 (use-package hl-todo
   :ensure t
@@ -192,6 +192,7 @@
 
 (cl-defmethod xref-backend-identifier-at-point ((_backend (eql eglot+dumb)))
   "Return the identifier at point for eglot+dumb."
+  (require 'dumb-jump)
   (cons (xref-backend-identifier-at-point 'eglot)
         (xref-backend-identifier-at-point 'dumb-jump)))
 
@@ -201,10 +202,12 @@
 
 (cl-defmethod xref-backend-definitions ((_backend (eql eglot+dumb)) identifier)
   "Return the definitions for eglot+dumb."
+  (require 'dumb-jump)
   (or (xref-backend-definitions 'eglot (car identifier))
       (xref-backend-definitions 'dumb-jump (cdr identifier))))
 
 (cl-defmethod xref-backend-references ((_backend (eql eglot+dumb)) identifier)
+  (require 'dumb-jump)
   (or (xref-backend-references 'eglot (car identifier))
       (xref-backend-references 'dumb-jump (cdr identifier))))
 
@@ -244,7 +247,7 @@
   (compilation-ask-about-save nil)
   (compilation-scroll-output 'all)
   (compilation-highlight-overlay t)
-  (compilation-environment '("TERM=dumb" "TERM=xterm-256color"))
+  (compilation-environment '("TERM=xterm-256color"))
   (compilation-window-height 10)
   (compilation-reuse-window t)
   (compilation-max-output-line-length nil)
@@ -455,19 +458,15 @@ A prefix argument will not filter project buffers."
   :ensure nil
   :hook ((emacs-lisp-mode . electric-indent-mode)
          (prog-mode . electric-pair-mode)
-         (prog-mode . highlight-symbol-mode)
          (prog-mode . drag-stuff-mode)
          (prog-mode . hl-todo-mode)
          ;; (prog-mode . dumb-jump-mode)
          (prog-mode . hs-minor-mode)
-         (prog-mode . rainbow-delimiters-mode)
          (prog-mode . flycheck-mode)
-         (prog-mode . breadcrumb-mode)
          (prog-mode . setup-programming-mode)
          (prog-mode . display-line-numbers-mode)
-         (prog-mode . indent-bars-mode)
-         (prog-mode . global-ligature-mode)
-         (prog-mode . global-prettify-symbols-mode)
+         ;; Menlo has no ligatures: re-enable `ligature-mode' here if you
+         ;; switch to a font that has them (JetBrains Mono, Fira Code...)
          ;; Default tab-width 4 för alla programmeringsspråk
          (prog-mode . (lambda ()
                         (setq-local tab-width 4)
@@ -477,6 +476,11 @@ A prefix argument will not filter project buffers."
   (display-line-numbers-type t)
   (display-line-numbers-width 4))
 
+
+;; Visual extras
+(dolist (mode '(highlight-symbol-mode rainbow-delimiters-mode
+                breadcrumb-local-mode indent-bars-mode prettify-symbols-mode))
+  (add-hook 'prog-mode-hook mode))
 
 (use-package treesit
   :ensure nil
@@ -492,15 +496,10 @@ A prefix argument will not filter project buffers."
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq auto-mode-alist (delete '("\\.js\\'" . typescript-ts-mode) auto-mode-alist))
-            (setq auto-mode-alist (delete '("\\.js\\'" . js-ts-mode) auto-mode-alist))
-            (add-to-list 'auto-mode-alist '("\\.js\\'" . tsx-ts-mode))
-            (add-to-list 'auto-mode-alist '("\\.jsx\\'" . tsx-ts-mode))
-            (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
-            
-            (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))))
+(use-package editorconfig
+  :ensure nil                           ; built into Emacs 30+
+  :config
+  (editorconfig-mode 1))
 
 ;;; Provide
 (provide 'mk-development)
