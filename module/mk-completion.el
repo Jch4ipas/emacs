@@ -72,12 +72,12 @@
 
 (use-package marginalia
   :ensure t
-  :after (vertico vertico-posframe)
+  :after vertico
   :config
   (marginalia-mode)
   (setopt marginalia--ellipsis "…"
           marginalia-align 'left
-          marginalia-align-offset -1)
+          marginalia-align-offset 0)
   (add-to-list 'marginalia-command-categories
                '(project-find-file . project-file))
   (add-to-list 'marginalia-annotators
