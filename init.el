@@ -30,6 +30,7 @@
 (require 'mk-web)             ;; Mode React/TSX and other !
 (require 'mk-term)      ;; Le terminal (vterm)
 (require 'mk-vc)        ;; Magit (L'intégration Git)
+(require 'mk-tools)     ;; Outils standards (helpful, vundo, snippets...)
 
 ;; (require 'mk-treemacs)  ;; L'explorateur de fichiers à gauche
 ;; (require 'mk-evil)               ;; Change complétement le fonctionnement de base de emacs et ressemble plus à vim
