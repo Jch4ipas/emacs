@@ -147,5 +147,37 @@
 
 (delete-selection-mode 1)
 
+(use-package whitespace
+  :ensure nil
+  :hook (prog-mode . whitespace-mode)
+  :custom
+  (whitespace-style '(face spaces tabs space-mark tab-mark))
+  (whitespace-display-mappings
+   '((space-mark 32 [183] [46])       ;; Espace normal = '·'
+     (tab-mark 9 [45 9] [92 9]))))  ;; Tabulation = '-'
+
+(setq-default tab-always-indent nil)
+
+(defun tab-dumb ()
+  (interactive)
+  (let ((col (current-indentation)))
+    (newline)
+    (indent-to col)))
+
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (local-set-key (kbd "RET") 'tab-dumb)
+            (local-set-key (kbd "<return>") 'tab-dumb)))
+
+(defun vscode-toggle-comment ()
+  (interactive)
+  (let ((start (line-beginning-position))
+        (end (line-end-position)))
+    (when (use-region-p)
+      (setq start (save-excursion (goto-char (region-beginning)) (line-beginning-position)))
+      (setq end (save-excursion (goto-char (region-end)) (line-end-position))))
+    (comment-or-uncomment-region start end)))
+(global-set-key (kbd "s-/") 'vscode-toggle-comment)
+
 (provide 'mk-editing)
 ;;; mk-editing.el ends here
