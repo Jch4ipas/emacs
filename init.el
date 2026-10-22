@@ -42,38 +42,6 @@
 ;; (require 'mk-notifications)      ;; 
 ;; (require 'mk-elfeed)             ;; C'est un lecteur de flux RSS
 
-;; Fix icons
-(when (eq system-type 'darwin)
-  (set-fontset-font t 'emoji (font-spec :family "Apple Color Emoji") nil 'prepend)
-  (set-fontset-font t '(#xe000 . #xf8ff) "Symbols Nerd Font Mono")
-  (set-fontset-font t '(#xf0000 . #xf1af0) "Symbols Nerd Font Mono"))
-(setq nerd-icons-font-family "Symbols Nerd Font Mono")
-
-(set-frame-parameter nil 'alpha-background 85)
-(add-to-list 'default-frame-alist '(alpha-background . 85))
-(set-face-attribute 'default nil :font "Menlo-14")
-(add-to-list 'default-frame-alist '(font . "Menlo-14"))
-
-;; Dashboard main page
-(use-package welcome-dashboard
-  :ensure nil
-  :config
-  (setq welcome-dashboard-latitude 46.52
-        welcome-dashboard-longitude 6.56
-        welcome-dashboard-use-nerd-icons t
-        welcome-dashboard-max-number-of-projects 8
-        welcome-dashboard-show-weather-info t
-        welcome-dashboard-use-fahrenheit nil
-        welcome-dashboard-min-left-padding 60        
-        welcome-dashboard-max-number-of-todos 5
-        welcome-dashboard-path-max-length 50
-        welcome-dashboard-image-file "~/.emacs.d/themes/emacs.png"
-        welcome-dashboard-image-width 200
-        welcome-dashboard-image-height 200
-        welcome-dashboard-title (concat "Welcome " user-full-name". Have a great day!"))
-  
-  (welcome-dashboard-create-welcome-hook))
-
 
 (provide 'init)
 ;;; init.el ends here
