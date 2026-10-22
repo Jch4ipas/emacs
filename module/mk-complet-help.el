@@ -4,6 +4,7 @@
 ;;             next to it (learn the key, or just use the menu)
 ;;   C-o       in dired, isearch (C-s), ibuffer (C-x C-b) and the agenda:
 ;;             a menu of the commands of that mode (casual)
+;;   Tip of the day on the dashboard; M-x mk/tip shows another one.
 ;;; Code:
 
 (declare-function mk/help--menu nil)
@@ -75,6 +76,7 @@ DIRECT-KEY is shown when the key of COMMAND cannot be found."
         ,(mk/menu-entry "T" "Exemples de commande" 'tldr)
         ,(mk/menu-entry "I" "Assistant IA" 'gptel)
         ,(mk/menu-entry "K" "Toutes les touches ici" 'embark-bindings)
+        ,(mk/menu-entry "!" "Une astuce" 'mk/tip)
         ,(mk/menu-entry "P" "Changer de profil" 'mk/switch-profile)]])
    t))
 
@@ -93,6 +95,67 @@ DIRECT-KEY is shown when the key of COMMAND cannot be found."
     (keymap-set ibuffer-mode-map "C-o" #'casual-ibuffer-tmenu))
   (with-eval-after-load 'org-agenda
     (keymap-set org-agenda-mode-map "C-o" #'casual-agenda-tmenu)))
+
+;;; Tip of the day
+(defconst mk/tips
+  '("M-. va à la définition, M-, revient là où tu étais."
+    "M-? liste toutes les utilisations du symbole sous le curseur."
+    "F2 renomme une variable ou une fonction dans tout le projet."
+    "C-c l a propose les corrections automatiques : import manquant, faute de frappe…"
+    "M-n / M-p sautent à l'erreur suivante / précédente."
+    "C-x p f ouvre un fichier du projet en tapant une partie de son nom."
+    "M-s r cherche un texte dans tout le projet, avec un aperçu."
+    "M-s l cherche dans le fichier, avec un aperçu de chaque ligne."
+    "M-g i liste les fonctions et classes du fichier pour y sauter."
+    "C-x b change de buffer. Tape « f » puis espace pour ne voir que les fichiers récents."
+    "C-. sur n'importe quoi (fichier, symbole, URL) propose les actions possibles."
+    "Après M-s r : C-. E exporte les résultats, C-c C-p les rend modifiables, C-c C-c enregistre tout."
+    "M-j puis deux lettres : saute n'importe où à l'écran."
+    "C-x g ouvre magit : s ajoute un fichier, c c commite, P p pousse."
+    "C-c d duplique la ligne, M-↑ / M-↓ la déplacent."
+    "C-> ajoute un curseur sur l'occurrence suivante, C-c m sur toutes."
+    "C-x u montre l'arbre des annulations : tu peux revenir à n'importe quel état."
+    "C-c r lance les tâches du projet : tests, commandes Symfony, dotnet…"
+    "C-x C-a b pose un point d'arrêt, C-x C-a d lance le débogueur."
+    "C-h D ouvre la doc du langage, C-h T des exemples de commandes du terminal."
+    "C-c i i ouvre le chat IA, C-c i r réécrit la sélection."
+    "C-c c note une tâche ou une idée sans quitter ce que tu fais ; C-c a montre l'agenda."
+    "C-x 3 coupe l'écran en deux, C-x o passe à l'autre fenêtre, C-x 0 la ferme."
+    "C-x 4 . ouvre la définition dans l'autre fenêtre."
+    "C-x SPC sélectionne un rectangle ; C-x r t écrit le même texte sur chaque ligne."
+    "F3 enregistre une macro, F4 l'arrête, puis F4 la rejoue."
+    "C-u C-SPC ramène le curseur à ses positions précédentes."
+    "M-% remplace avec confirmation : y oui, n non, ! tout le reste."
+    "C-c t ouvre l'explorateur de fichiers."
+    "C-h k puis une touche explique ce que fait cette touche."
+    "C-h B liste toutes les touches disponibles ici, avec une recherche."
+    "M-x accepte des morceaux de nom dans le désordre : « rena egl » trouve eglot-rename."
+    "C-c SPC ouvre le menu de toutes les fonctions, avec leurs touches."
+    "M-F formate tout le fichier."
+    "s-/ commente ou décommente la ligne ou la sélection."
+    "Dans dired, C-o ouvre le menu de toutes ses commandes."
+    "Dans dired, C-x C-q permet de renommer des fichiers en éditant le texte, C-c C-c pour valider."
+    "C-M-f / C-M-b sautent par-dessus un bloc entre parenthèses ou accolades."
+    "C-s cherche dans le fichier ; C-o pendant la recherche ouvre son menu.")
+  "Tips shown on the dashboard and by `mk/tip'.")
+
+(defun mk/random-tip ()
+  "Return a random tip from `mk/tips'."
+  (nth (random (length mk/tips)) mk/tips))
+
+(defun mk/tip ()
+  "Show a random tip in the echo area."
+  (interactive)
+  (message "Astuce : %s" (mk/random-tip)))
+
+(with-eval-after-load 'welcome-dashboard
+  (advice-add 'welcome-dashboard--insert-misc-info :after
+              (lambda (&rest _)
+                ;; Not welcome-dashboard--insert-centered: it fails when the
+                ;; text is wider than the window
+                (let ((tip (concat "Astuce : " (mk/random-tip))))
+                  (insert "\n" (make-string (max 0 (/ (- (window-width) (string-width tip)) 2)) ?\s)
+                          (propertize tip 'face 'font-lock-comment-face) "\n")))))
 
 (provide 'mk-complet-help)
 ;;; mk-complet-help.el ends here
