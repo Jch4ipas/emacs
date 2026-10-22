@@ -16,18 +16,18 @@
 ;;; Code:
 
 (defconst mk/complet-modules
-  '(mk-minimal mk-lsp mk-complet-ui mk-complet-edit mk-complet-debug mk-complet-web mk-complet-php mk-complet-python mk-complet-scripts mk-complet-dotnet mk-complet-org mk-complet-devops mk-complet-ai mk-complet-docs mk-complet-help)
+  '(mk-minimal mk-lsp mk-claude mk-complet-ui mk-complet-edit mk-complet-debug mk-complet-web mk-complet-php mk-complet-python mk-complet-scripts mk-complet-dotnet mk-complet-org mk-complet-devops mk-complet-ai mk-complet-docs mk-complet-help)
   "Modules of the complet profile: minimal plus extra modules.")
 
 (defconst mk/profiles
   `((complet      "Minimal + interface, outils, langages et aides"
                   ,mk/complet-modules)
     (minimal      "Config pro minimaliste : built-ins + vertico, corfu, eglot, magit"
-                  (mk-minimal mk-lsp))
+                  (mk-minimal mk-lsp mk-claude))
     (evil         "Comme complet, avec les touches Vim (leader : SPC)"
                   (,@mk/complet-modules mk-evil))
     (evil-minimal "Comme minimal, avec les touches Vim (leader : SPC)"
-                  (mk-minimal mk-lsp mk-evil)))
+                  (mk-minimal mk-lsp mk-claude mk-evil)))
   "Available profiles: (NAME DESCRIPTION MODULES).")
 
 (defconst mk/profile-file
