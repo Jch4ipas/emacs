@@ -29,3 +29,14 @@ flycheck_*.el
 /localpackages/spotlight-mode/
 /localpackages/periphery/*
 /periphery*
+
+# Backups, auto-saves (may contain secrets!) and generated files
+/auto-save-list/
+/backups/
+*~
+\#*\#
+.\#*
+/places
+/package-quickstart.el
+/package-quickstart.elc
+/eln-cache/
