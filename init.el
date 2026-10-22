@@ -6,7 +6,9 @@
 
 ;;; Code:
 
-;; Suppress all warnings when loading packages
+;; Keep Custom's auto-generated code out of init.el
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file 'noerror 'nomessage)
 
 (setopt debug-on-error nil)
 ;; (load (expand-file-name "suppress-warnings" cser-emacs-directory) nil t)
@@ -89,29 +91,3 @@
 
 (provide 'init)
 ;;; init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(async auto-compile autothemer avy breadcrumb cape company-prescient
-           corfu dape diff-hl doom-themes drag-stuff dumb-jump
-           eldoc-box embark-consult evil exec-path-from-shell
-           expand-region flycheck-eglot flycheck-package flyover
-           git-timemachine highlight-symbol hl-todo iedit imenu-list
-           indent-bars julia-vterm ligature magit marginalia
-           markdown-ts-mode nerd-icons-completion nerd-icons-corfu
-           nerd-icons-dired nerd-icons-ibuffer no-littering orderless
-           rainbow-delimiters rg treesit-auto ultra-scroll undo-fu
-           undo-fu-session vertico-posframe visual-replace
-           vscode-dark-plus-theme wgrep which-key))
- '(package-vc-selected-packages
-   '((ultra-scroll :url "https://github.com/jdtsmith/ultra-scroll"
-                   :main-file "ultra-scroll.el" :branch "main"))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(vertico-posframe-border ((t (:inherit vertico-posframe)))))
