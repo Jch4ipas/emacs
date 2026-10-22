@@ -15,12 +15,13 @@
 ;;
 ;; Keys (Emacs defaults are kept; s- = Cmd, M- = Option):
 ;;   s-p  find file in project   s-P  M-x            s-F  search in project
-;;   C-x b / S-TAB  buffers (preview)    M-s l  search buffer M-g i  symbols in file
+;;   C-x b / C-TAB  buffers (preview)    M-s l  search buffer M-g i  symbols in file
 ;;   F12 / S-F12 / M-F12  definition / references / back
 ;;   F2  rename   M-F  format   M-n / M-p  next / previous error   s-M  errors
 ;;   C-.  actions on thing at point (embark)   M-j  jump anywhere (avy)
 ;;   s-z / s-Z  undo / redo   s-/  comment   s-w  close buffer   C-`  terminal
 ;;   C-x g  magit
+;;   TAB / S-TAB  indent / unindent (the line, or every line of the region)
 ;;; Code:
 
 ;;; Sane defaults
@@ -41,7 +42,7 @@
         save-interprogram-paste-before-kill t
         indent-tabs-mode nil
         tab-width 4
-        tab-always-indent 'complete          ; TAB indents, then completes
+        tab-always-indent t                  ; never complete: see mk/tab-mode
         scroll-conservatively 101            ; never recenter while scrolling
         scroll-margin 2
         mouse-wheel-tilt-scroll t
@@ -123,7 +124,7 @@
 (use-package consult
   :defer t
   :bind (("C-x b"   . consult-buffer)
-         ("<backtab>" . consult-buffer)   ; S-TAB, quicker to reach (not in Org)
+         ("C-<tab>" . consult-buffer)     ; like Ctrl+Tab in VS Code (not in Org)
          ("C-x p b" . consult-project-buffer)
          ("M-y"     . consult-yank-pop)
          ("M-g g"   . consult-goto-line)
@@ -163,6 +164,11 @@
   (corfu-cycle t)
   (corfu-preselect 'prompt)
   (corfu-popupinfo-delay '(0.5 . 0.2))
+  :bind (:map corfu-map
+              ;; TAB accepts the first proposal, like other editors (RET
+              ;; still needs C-n first, so RET at end of line stays RET)
+              ("TAB" . mk/corfu-accept)
+              ("<tab>" . mk/corfu-accept))
   :config
   (global-corfu-mode 1)
   (corfu-history-mode 1)
@@ -174,6 +180,121 @@
   :config
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-dabbrev 90))
+
+;;; TAB and S-TAB like other editors
+;; In code buffers TAB inserts spaces up to the next indentation step at
+;; the cursor (or a real tab where the mode uses tabs, like Go or
+;; Makefiles), S-TAB removes one step, and both shift every line of the
+;; region while keeping it selected.  RET still indents new lines the
+;; way the mode wants, and C-M-i opens the completion menu by hand.
+(defconst mk/indent-offset-variables
+  '((python-base-mode . python-indent-offset)
+    (typescript-ts-base-mode . typescript-ts-mode-indent-offset)
+    (js-base-mode . js-indent-level)
+    (json-ts-mode . json-ts-mode-indent-offset)
+    (css-base-mode . css-indent-offset)
+    (html-ts-mode . html-ts-mode-indent-offset)
+    (web-mode . web-mode-code-indent-offset)
+    (php-ts-mode . php-ts-mode-indent-offset)
+    (csharp-ts-mode . csharp-ts-mode-indent-offset)
+    (sh-base-mode . sh-basic-offset)
+    (c-ts-base-mode . c-ts-mode-indent-offset)
+    (go-ts-mode . go-ts-mode-indent-offset)
+    (java-ts-mode . java-ts-mode-indent-offset)
+    (rust-ts-mode . rust-ts-mode-indent-offset)
+    (lua-ts-mode . lua-ts-indent-offset)
+    (ruby-base-mode . ruby-indent-level)
+    (toml-ts-mode . toml-ts-mode-indent-offset)
+    (yaml-ts-mode . 2))
+  "Indentation step of each major mode: a variable or a number.")
+
+(defun mk/indent-offset ()
+  "Return the indentation step of the current buffer, in columns."
+  (let* ((entry (seq-find (lambda (e) (derived-mode-p (car e))) mk/indent-offset-variables))
+         (value (and entry (if (symbolp (cdr entry))
+                               (and (boundp (cdr entry)) (symbol-value (cdr entry)))
+                             (cdr entry)))))
+    (if (and (integerp value) (> value 0)) value tab-width)))
+
+(defun mk/region-lines ()
+  "Return (FIRST . LAST): the start of the first and last lines of the region.
+A region ending at the start of a line does not include that line."
+  (let ((beg (region-beginning))
+        (end (region-end)))
+    (save-excursion
+      (goto-char end)
+      (when (and (bolp) (> end beg)) (forward-line -1))
+      (cons (save-excursion (goto-char beg) (line-beginning-position))
+            (line-beginning-position)))))
+
+(defun mk/unindented-column (column offset)
+  "COLUMN moved back to the previous multiple of OFFSET."
+  (max 0 (if (zerop (% column offset)) (- column offset) (* offset (/ column offset)))))
+
+(defun mk/shift-lines (direction)
+  "Indent (DIRECTION 1) or unindent (-1) the lines of the region by one step."
+  (let ((offset (mk/indent-offset))
+        (lines (mk/region-lines))
+        (mark (copy-marker (mark)))
+        (point (point-marker)))
+    (save-excursion
+      (goto-char (car lines))
+      (dotimes (_ (1+ (count-lines (car lines) (cdr lines))))
+        (unless (looking-at-p "[ \t]*$")   ; leave empty lines empty
+          (let ((column (current-indentation)))
+            (indent-line-to (if (> direction 0)
+                                (+ column offset)
+                              (mk/unindented-column column offset)))))
+        (forward-line 1)))
+    (set-mark mark)
+    (goto-char point)
+    (setq deactivate-mark nil)))
+
+(defun mk/tab ()
+  "Expand a snippet, shift the region, or insert one indentation step."
+  (interactive)
+  (cond
+   ((and (bound-and-true-p yas-minor-mode)
+         (let ((yas-fallback-behavior 'return-nil)) (yas-expand))))
+   ((use-region-p) (mk/shift-lines 1))
+   (indent-tabs-mode (insert "\t"))
+   (t (let ((offset (mk/indent-offset)))
+        (insert (make-string (- offset (% (current-column) offset)) ?\s))))))
+
+(defun mk/backtab ()
+  "Remove one indentation step from the line, or from each line of the region."
+  (interactive)
+  (if (use-region-p)
+      (mk/shift-lines -1)
+    (let ((in-indentation (<= (current-column) (current-indentation)))
+          (from-end (- (line-end-position) (point))))
+      (indent-line-to (mk/unindented-column (current-indentation) (mk/indent-offset)))
+      (if in-indentation
+          (back-to-indentation)
+        (goto-char (- (line-end-position) from-end))))))
+
+(defun mk/corfu-accept ()
+  "Insert the selected completion, or the first one when none is selected."
+  (interactive)
+  (when (< corfu--index 0) (corfu-next))
+  (corfu-insert))
+
+(defvar-keymap mk/tab-mode-map
+  "TAB" #'mk/tab
+  "<tab>" #'mk/tab
+  "<backtab>" #'mk/backtab)
+
+(define-minor-mode mk/tab-mode
+  "TAB and S-TAB indent and unindent like other editors."
+  :keymap mk/tab-mode-map)
+
+(defun mk/tab-mode-maybe ()
+  "Turn on `mk/tab-mode', except in Lisp, where TAB indents by structure."
+  (unless (derived-mode-p 'lisp-data-mode)
+    (mk/tab-mode 1)))
+
+(dolist (hook '(prog-mode-hook yaml-ts-mode-hook conf-mode-hook))
+  (add-hook hook #'mk/tab-mode-maybe))
 
 ;;; Code: diagnostics, navigation, formatting (eglot itself is in mk-lsp.el)
 (use-package flymake
