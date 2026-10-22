@@ -8,6 +8,7 @@
 ;;   C-c m        a cursor on every occurrence (C-S-c C-S-c: on each line)
 ;;   M-up/M-down  move the line or the region
 ;;   C-c d        duplicate the line or the region
+;;   C-c r        tasks of the project (tests, build, framework commands)
 ;;   C-x u        undo tree (vundo)
 ;;   TAB          expand a snippet (yasnippet)
 ;;   C-h f/v/k    help with source and references (helpful)
@@ -73,6 +74,21 @@
 
 (keymap-global-set "C-c d" #'duplicate-dwim)   ; built in since Emacs 29
 (setopt duplicate-line-final-position 1)       ; then go to the copy
+
+;;; Project tasks: one key for tests, build, framework commands
+(defvar mk/project-task-functions nil
+  "Functions returning the task menu command for the current buffer, or nil.
+The language modules (Python, C#, Symfony...) add theirs here; the
+first non-nil result is used.")
+
+(defun mk/project-tasks ()
+  "Open the task menu of this kind of project, or run a compile command."
+  (interactive)
+  (if-let* ((command (run-hook-with-args-until-success 'mk/project-task-functions)))
+      (call-interactively command)
+    (call-interactively #'project-compile)))
+
+(keymap-global-set "C-c r" #'mk/project-tasks)
 
 ;;; Undo tree and better help
 (use-package vundo
