@@ -9,20 +9,18 @@
 ;; environment variable overrides it for one launch:
 ;;   open --env EMACS_PROFILE=minimal -a Emacs
 ;;
-;; complet loads the full modular configuration; minimal is a separate,
-;; single file config (mk-minimal.el) built like the reference minimal
-;; configs (Emacs Bedrock, minimal-emacs.d): built-ins first, then a handful
-;; of packages.
+;; minimal (mk-minimal.el) is built like the reference minimal configs
+;; (Emacs Bedrock, minimal-emacs.d): built-ins first, then a handful of
+;; packages.  complet is minimal, with the same Emacs keys, plus the
+;; mk-complet-*.el modules (look, editing tools, languages, help).
 ;;; Code:
 
 (defconst mk/complet-modules
-  '(mk-core mk-theme mk-emacs mk-ui mk-completion mk-code-completion
-    mk-development mk-lsp mk-editing mk-web mk-term mk-vc mk-tools
-    mk-treemacs mk-ide)
-  "Modules of the full configuration.")
+  '(mk-minimal mk-lsp mk-complet-ui)
+  "Modules of the complet profile: minimal plus extra modules.")
 
 (defconst mk/profiles
-  `((complet      "Tout : interface complète, explorateur, session"
+  `((complet      "Minimal + interface, outils, langages et aides"
                   ,mk/complet-modules)
     (minimal      "Config pro minimaliste : built-ins + vertico, corfu, eglot, magit"
                   (mk-minimal mk-lsp))
