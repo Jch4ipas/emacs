@@ -1,0 +1,5 @@
+# Same line ends (LF) on macOS and Windows, whatever core.autocrlf says
+* text=auto eol=lf
+*.png binary
+*.gif binary
+*.jpg binary

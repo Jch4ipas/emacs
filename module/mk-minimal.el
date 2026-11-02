@@ -369,8 +369,9 @@ A region ending at the start of a line does not include that line."
   (when (executable-find "gls")
     (setq insert-directory-program "gls")))
 
-;;; Terminal
+;;; Terminal (vterm; ghostel on Windows, where vterm does not work)
 (use-package vterm
+  :unless (eq system-type 'windows-nt)
   :defer t
   :commands vterm
   :custom (vterm-kill-buffer-on-exit t))
@@ -378,9 +379,11 @@ A region ending at the start of a line does not include that line."
 (defun toggle-vterm ()
   "Show or hide the terminal."
   (interactive)
-  (let ((buffer (get-buffer "*vterm*")))
+  (let* ((windows (eq system-type 'windows-nt))
+         (buffer (get-buffer (if windows "*ghostel*" "*vterm*"))))
     (cond ((and buffer (eq buffer (current-buffer))) (delete-window))
           (buffer (switch-to-buffer-other-window buffer))
+          (windows (switch-to-buffer-other-window (save-window-excursion (ghostel))))
           (t (vterm-other-window)))))
 
 ;;; macOS style keys (just bindings to built-in commands)

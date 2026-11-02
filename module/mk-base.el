@@ -66,11 +66,13 @@
            (make-directory (file-name-directory mk/path-cache-file) t)
            (with-temp-file mk/path-cache-file (insert path))))))))
 
-(when (file-readable-p mk/path-cache-file)
-  (mk/apply-path (with-temp-buffer
-                   (insert-file-contents mk/path-cache-file)
-                   (string-trim (buffer-string)))))
-(add-hook 'emacs-startup-hook #'mk/refresh-shell-path)
+;; Windows has no login shell: Emacs already gets the PATH of the system
+(unless (eq system-type 'windows-nt)
+  (when (file-readable-p mk/path-cache-file)
+    (mk/apply-path (with-temp-buffer
+                     (insert-file-contents mk/path-cache-file)
+                     (string-trim (buffer-string)))))
+  (add-hook 'emacs-startup-hook #'mk/refresh-shell-path))
 
 ;;; Recompile packages after an Emacs upgrade
 ;; Bytecode compiled by an older Emacs can break with a newer one (e.g.

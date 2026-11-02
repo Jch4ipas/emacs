@@ -53,9 +53,9 @@
 
 ;;; Frame defaults (safe here)
 (setq default-frame-alist
-      '((background-color . "#13131a")
+      `((background-color . "#13131a")
         (foreground-color . "#a0a0ae")
-        (font . "Menlo-14")
+        (font . ,(if (eq system-type 'windows-nt) "Consolas-11" "Menlo-14"))
         (min-height . 1)
         (min-width . 1)
         (height . 45)

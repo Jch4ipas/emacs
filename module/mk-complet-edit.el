@@ -32,7 +32,8 @@
   :config
   (treemacs-project-follow-mode 1)      ; show the project of the current file
   (treemacs-filewatch-mode 1)
-  (treemacs-git-mode 'deferred)
+  ;; deferred needs python3, often missing on Windows
+  (treemacs-git-mode (if (eq system-type 'windows-nt) 'simple 'deferred))
   (treemacs-hide-gitignored-files-mode 1))
 
 (use-package treemacs-nerd-icons

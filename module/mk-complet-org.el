@@ -52,7 +52,10 @@
   "Render the current Markdown buffer with pandoc and show it in eww."
   (interactive)
   (unless (executable-find "pandoc")
-    (user-error "pandoc is not installed (brew install pandoc)"))
+    (user-error "pandoc is not installed (%s)"
+                (if (eq system-type 'windows-nt)
+                    "winget install JohnMacFarlane.Pandoc"
+                  "brew install pandoc")))
   (let ((html (make-temp-file "preview-" nil ".html"))
         (dir default-directory))
     (call-process-region (point-min) (point-max) "pandoc" nil nil nil

@@ -13,6 +13,9 @@
 ;; (Emacs Bedrock, minimal-emacs.d): built-ins first, then a handful of
 ;; packages.  complet is minimal, with the same Emacs keys, plus the
 ;; mk-complet-*.el modules (look, editing tools, languages, help).
+;;
+;; On Windows, mk-windows.el is loaded after mk-base in every profile:
+;; it makes the same configuration work there (see WINDOWS.org).
 ;;; Code:
 
 (defconst mk/complet-modules
@@ -50,8 +53,11 @@
   "The active profile.")
 
 (defun mk/profile-modules ()
-  "Return the modules to load for the active profile, in order."
-  (cons 'mk-base (nth 2 (assq mk/profile mk/profiles))))
+  "Return the modules to load for the active profile, in order.
+On Windows, mk-windows comes right after mk-base."
+  (append '(mk-base)
+          (and (eq system-type 'windows-nt) '(mk-windows))
+          (nth 2 (assq mk/profile mk/profiles))))
 
 (defun mk/module-p (module)
   "Return non-nil if MODULE is loaded by the active profile."

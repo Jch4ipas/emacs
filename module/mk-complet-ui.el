@@ -15,8 +15,11 @@
 (add-to-list 'default-frame-alist '(alpha-background . 85))
 
 ;;; Icons (Symbols Nerd Font Mono must be installed)
-(when (eq system-type 'darwin)
-  (set-fontset-font t 'emoji (font-spec :family "Apple Color Emoji") nil 'prepend)
+(when (memq system-type '(darwin windows-nt))
+  (set-fontset-font t 'emoji (font-spec :family (if (eq system-type 'darwin)
+                                                     "Apple Color Emoji"
+                                                   "Segoe UI Emoji"))
+                    nil 'prepend)
   (set-fontset-font t '(#xe000 . #xf8ff) "Symbols Nerd Font Mono")
   (set-fontset-font t '(#xf0000 . #xf1af0) "Symbols Nerd Font Mono"))
 

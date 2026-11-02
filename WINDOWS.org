@@ -1,0 +1,78 @@
+#+title: Installer cette config sur Windows
+
+La même config marche sur Mac et sur Windows. Sur Windows, =module/mk-windows.el=
+est chargé en plus (rien ne change sur le Mac).
+
+* 1. Installer les programmes (PowerShell)
+
+#+begin_src powershell
+winget install GNU.Emacs Git.Git BurntSushi.ripgrep.MSVC OpenJS.NodeJS.LTS
+winget install AutoHotkey.AutoHotkey
+winget install BrechtSanders.WinLibs.POSIX.UCRT   # gcc : pour les grammaires tree-sitter
+winget install wez.wezterm                        # terminal (ou Windows Terminal, déjà là)
+#+end_src
+
+Pour Claude Code : https://claude.com/claude-code (installeur Windows), puis
+=claude= une fois dans un terminal pour te connecter.
+
+* 2. Dire à Emacs où est ton dossier perso
+
+Sans ça, =~= est =C:\Users\toi\AppData\Roaming= au lieu de =C:\Users\toi=.
+
+#+begin_src powershell
+setx HOME "$env:USERPROFILE"
+#+end_src
+
+Ferme et rouvre PowerShell après.
+
+* 3. Récupérer la config
+
+#+begin_src powershell
+git clone <url-de-ton-repo> $env:USERPROFILE\.emacs.d
+#+end_src
+
+Lance Emacs : au premier démarrage il installe tous les paquets (quelques
+minutes). Le profil se choisit avec =C-c P= ; il est enregistré par
+ordinateur (=var/profile=), donc tu peux avoir minimal sur le Mac et complet
+sur Windows. *AutoHotkey n'est que dans complet.*
+
+* 4. Une seule fois dans Emacs
+
+| Commande                    | Pour quoi                                           |
+|-----------------------------+-----------------------------------------------------|
+| =M-x nerd-icons-install-fonts= | les icônes (double-clique ensuite sur le .ttf)   |
+| =M-x mk/ahk-install-lsp=       | complétion et erreurs AutoHotkey v2              |
+| =M-x mk/devdocs-install-all=   | la doc des langages (=C-h D=)                    |
+
+* 5. La clé de l'assistant IA (gptel, =C-c i i=)
+
+Sur le Mac elle est dans le trousseau. Sur Windows, dans un fichier chiffré :
+1. =C-x C-f ~/.authinfo.gpg=
+2. écris une ligne : =machine inference.rcp.epfl.ch login apikey password LA-CLÉ=
+3. =C-x C-s=, choisis le chiffrement symétrique et un mot de passe.
+
+Emacs te demandera ce mot de passe la première fois que tu utilises l'IA.
+
+* AutoHotkey
+
+| Touche    | Effet                                                      |
+|-----------+------------------------------------------------------------|
+| =C-c C-c= | enregistre et lance le script (le relancer remplace l'ancien) |
+| =C-c C-k= | arrête le script                                           |
+| =C-h D=   | doc AutoHotkey v2 du mot sous le curseur                   |
+| =C-h .=   | doc dans Emacs (serveur de langage)                        |
+
+Si le script a une erreur, elle s'affiche dans le buffer =*AutoHotkey*=.
+Le script s'arrête quand tu fermes Emacs : pour qu'il tourne tout le temps,
+double-clique sur le =.ahk=, ou mets-le dans le dossier Démarrage
+(=Win+R=, =shell:startup=).
+
+* Ce qui change par rapport au Mac
+
+- *Touche Windows = Cmd* : =s-p=, =s-z=, =s-/=… marchent pareil. Windows
+  garde quelques combinaisons pour lui (=Win+L= verrouille toujours).
+- *Terminal* (=C-`=) : ghostel avec PowerShell au lieu de vterm.
+- *Fichiers* : enregistrés en UTF-8 avec des fins de ligne Unix (LF), comme
+  sur le Mac, pour que git ne voie pas tout le fichier modifié.
+- *Police* : Consolas au lieu de Menlo.
+- Mets tes projets dans =C:\Users\toi\dev= : =~/dev= dans Emacs.

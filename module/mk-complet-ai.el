@@ -11,22 +11,27 @@
 ;;   C-c i r   rewrite / refactor the region (shows a diff to accept)
 ;;   C-c i m   menu: model, system prompt, where the answer goes...
 ;;
-;; The API key is read from the macOS keychain (internet password, server
-;; inference.rcp.epfl.ch, account apikey), never from this file:
-;;   security add-internet-password -U -a apikey -s inference.rcp.epfl.ch -w
+;; The API key is read with auth-source, never from this file:
+;;   macOS  : the keychain (internet password, server
+;;            inference.rcp.epfl.ch, account apikey)
+;;              security add-internet-password -U -a apikey -s inference.rcp.epfl.ch -w
+;;   Windows: the encrypted file ~/.authinfo.gpg (see WINDOWS.org), line
+;;              machine inference.rcp.epfl.ch login apikey password LA-CLÉ
 ;;; Code:
 
 (use-package auth-source
   :ensure nil
   :defer t
   :config
-  (add-to-list 'auth-sources 'macos-keychain-internet))
+  (when (eq system-type 'darwin)
+    (add-to-list 'auth-sources 'macos-keychain-internet)))
 
 (defun mk/gptel-epfl-key ()
-  "Return the EPFL inference API key from auth-source (macOS keychain)."
+  "Return the EPFL inference API key from auth-source."
   (require 'auth-source)
   (or (auth-source-pick-first-password :host "inference.rcp.epfl.ch" :user "apikey")
-      (user-error "No API key for inference.rcp.epfl.ch in the keychain")))
+      (user-error "No API key for inference.rcp.epfl.ch in %s"
+                  (if (eq system-type 'darwin) "the keychain" "~/.authinfo.gpg"))))
 
 (use-package gptel
   :defer t
