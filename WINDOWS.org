@@ -7,7 +7,7 @@ est chargé en plus (rien ne change sur le Mac).
 
 #+begin_src powershell
 winget install GNU.Emacs Git.Git BurntSushi.ripgrep.MSVC OpenJS.NodeJS.LTS
-winget install AutoHotkey.AutoHotkey
+winget install AutoHotkey.AutoHotkey GnuPG.GnuPG   # GnuPG : signatures des paquets, clé API
 winget install BrechtSanders.WinLibs.POSIX.UCRT   # gcc : pour les grammaires tree-sitter
 winget install wez.wezterm                        # terminal (ou Windows Terminal, déjà là)
 #+end_src

@@ -7,8 +7,8 @@
 ;;   - the Windows key is Super, like Cmd on the Mac: Win+C copies, Win+V
 ;;     pastes, s-p, s-z, s-/... work the same (Windows keeps a few for
 ;;     itself, such as Win+L)
-;;   - the Unix tools of Git for Windows (diff, find, gpg...) are used by
-;;     ediff, project.el, dired and auth-source
+;;   - the Unix tools of Git for Windows (diff, find, grep) are used by
+;;     ediff, project.el and dired; gpg is the Windows one (GnuPG)
 ;;   - files are saved in UTF-8 with Unix line ends (LF), like on the Mac
 ;;   - the terminal (C-` and Claude Code) is ghostel running PowerShell
 ;;
@@ -80,8 +80,20 @@
 ;;; Terminal: ghostel with PowerShell (vterm does not work on Windows)
 (setq ghostel-shell (or (executable-find "pwsh") "powershell.exe"))
 
-;;; API keys: ~/.authinfo.gpg instead of the macOS keychain
-;; The passphrase is asked in the minibuffer (gpg of Git for Windows)
+;;; gpg: package signatures and ~/.authinfo.gpg (instead of the keychain)
+;; The gpg of Git for Windows is an MSYS program: it reads "c:/Users/..."
+;; as a relative path, so checking the signature of GNU ELPA failed and
+;; its packages (vertico-posframe...) could not be installed.  Use the
+;; Windows gpg (winget install GnuPG.GnuPG) when it is there; without it,
+;; signatures are not checked (the download itself is still HTTPS).
+(let ((gpg (seq-find #'file-executable-p
+                     (mapcar (lambda (dir) (expand-file-name "GnuPG/bin/gpg.exe" dir))
+                             (delq nil (list (getenv "ProgramFiles")
+                                             (getenv "ProgramFiles(x86)")))))))
+  (if gpg
+      (setq epg-gpg-program gpg)
+    (setq package-check-signature nil)))
+;; The passphrase is asked in the minibuffer
 (setq epg-pinentry-mode 'loopback)
 
 (provide 'mk-windows)
