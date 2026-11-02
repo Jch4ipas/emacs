@@ -205,6 +205,7 @@
     (lua-ts-mode . lua-ts-indent-offset)
     (ruby-base-mode . ruby-indent-level)
     (toml-ts-mode . toml-ts-mode-indent-offset)
+    (ahk-mode . ahk-indentation)
     (yaml-ts-mode . 2))
   "Indentation step of each major mode: a variable or a number.")
 
