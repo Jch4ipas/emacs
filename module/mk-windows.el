@@ -4,8 +4,9 @@
 ;; the macOS configuration never sees it.  It makes Windows behave like
 ;; the Mac as much as possible:
 ;;
-;;   - the Windows key is Super, like Cmd on the Mac: s-p, s-z, s-/... work
-;;     the same (Windows keeps a few for itself, such as Win+L)
+;;   - the Windows key is Super, like Cmd on the Mac: Win+C copies, Win+V
+;;     pastes, s-p, s-z, s-/... work the same (Windows keeps a few for
+;;     itself, such as Win+L)
 ;;   - the Unix tools of Git for Windows (diff, find, gpg...) are used by
 ;;     ediff, project.el, dired and auth-source
 ;;   - files are saved in UTF-8 with Unix line ends (LF), like on the Mac
@@ -21,9 +22,32 @@
       w32-pass-lwindow-to-system nil
       w32-pass-rwindow-to-system nil)
 
-;; These combinations are Windows shortcuts (Win+P screens, Win+Z
-;; layouts, Win+W widgets...): ask Windows to give them to Emacs instead
-(dolist (key '([s-p] [s-P] [s-z] [s-Z] [s-w] [s-/] [s-F] [s-M]))
+;; The Cmd keys that Emacs gives on the Mac (term/ns-win.el), so Win+C
+;; copies like Cmd+C.  The other s- keys are in mk-minimal.el.
+(dolist (binding '(("s-c" . kill-ring-save)
+                   ("s-v" . yank)
+                   ("s-x" . kill-region)
+                   ("s-a" . mark-whole-buffer)
+                   ("s-s" . save-buffer)
+                   ("s-f" . isearch-forward)
+                   ("s-g" . isearch-repeat-forward)
+                   ("s-o" . find-file)
+                   ("s-n" . make-frame)
+                   ("s-q" . save-buffers-kill-emacs)
+                   ("s-k" . kill-current-buffer)
+                   ("s-u" . revert-buffer)
+                   ("s-+" . text-scale-adjust)
+                   ("s-=" . text-scale-adjust)
+                   ("s--" . text-scale-adjust)
+                   ("s-0" . text-scale-adjust)))
+  (keymap-global-set (car binding) (cdr binding)))
+
+;; These combinations are Windows shortcuts (Win+C Copilot, Win+V
+;; clipboard history, Win+P screens, Win+Z layouts...): ask Windows to
+;; give them to Emacs instead.  Win+L (lock) cannot be taken.
+(dolist (key '([s-c] [s-v] [s-x] [s-a] [s-s] [s-f] [s-g] [s-o] [s-n] [s-q]
+               [s-k] [s-u] [s-+] [s-=] [s--] [s-0]
+               [s-p] [s-P] [s-z] [s-Z] [s-w] [s-/] [s-F] [s-M]))
   (ignore-errors (w32-register-hot-key key)))
 
 ;;; Unix tools of Git for Windows

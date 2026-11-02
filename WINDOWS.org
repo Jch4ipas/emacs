@@ -69,8 +69,11 @@ double-clique sur le =.ahk=, ou mets-le dans le dossier Démarrage
 
 * Ce qui change par rapport au Mac
 
-- *Touche Windows = Cmd* : =s-p=, =s-z=, =s-/=… marchent pareil. Windows
-  garde quelques combinaisons pour lui (=Win+L= verrouille toujours).
+- *Touche Windows = Cmd* : =Win+C= copie, =Win+V= colle, =Win+X= coupe,
+  =Win+S= enregistre, =Win+A= sélectionne tout, comme =Cmd= sur le Mac ;
+  =s-p=, =s-z=, =s-/=… marchent pareil. =Ctrl+C= reste le préfixe =C-c=
+  d'Emacs. Windows garde quelques combinaisons pour lui (=Win+L= verrouille
+  toujours : utilise =M-g g= pour aller à une ligne).
 - *Terminal* (=C-`=) : ghostel avec PowerShell au lieu de vterm.
 - *Fichiers* : enregistrés en UTF-8 avec des fins de ligne Unix (LF), comme
   sur le Mac, pour que git ne voie pas tout le fichier modifié.
